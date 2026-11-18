@@ -1,0 +1,86 @@
+export interface SlideMeta {
+  /** section label shown in the top-left corner (text taken verbatim from the deck) */
+  section: string
+  /** "1 OF 3" style position inside the section, if any */
+  part?: string
+  title: string
+  /** ids that the up / down keys cycle through, in reading order */
+  spot: string[]
+}
+
+export const SLIDES: SlideMeta[] = [
+  {
+    section: 'MGMT401',
+    part: 'CONTEMPORARY MANAGEMENT AND LEADERSHIP',
+    title: 'Strategic Management, Ethical and Sustainable Practices, and Organisational Culture',
+    spot: [],
+  },
+  {
+    section: 'CASE SUMMARY',
+    part: '1 OF 1',
+    title: 'Bunnings Group: Case Overview',
+    spot: ['s2-stores', 's2-employees', 's2-revenue', 's2-context', 's2-issues', 's2-why'],
+  },
+  {
+    section: 'STRATEGIC ANALYSIS',
+    part: '1 OF 3',
+    title: 'How Does Bunnings Compete?',
+    spot: ['s3-corp', 's3-cost', 's3-diff', 's3-p1', 's3-p2', 's3-p3'],
+  },
+  {
+    section: 'STRATEGIC ANALYSIS',
+    part: '2 OF 3',
+    title: 'Responding to External Pressures',
+    spot: ['s4-economic', 's4-digital', 's4-customer', 's4-sustain', 's4-omni'],
+  },
+  {
+    section: 'STRATEGIC ANALYSIS',
+    part: '3 OF 3',
+    title: 'Is Bunnings’ Advantage Sustainable?',
+    spot: ['s5-v', 's5-r', 's5-i', 's5-o', 's5-rev', 's5-earn', 's5-judge'],
+  },
+  {
+    section: 'ETHICAL, INCLUSIVE & SUSTAINABLE MANAGEMENT',
+    part: '1 OF 3',
+    title: 'Ethical Governance and Responsible Sourcing',
+    spot: ['s6-ethics', 's6-fy24', 's6-fy25', 's6-sourcing', 's6-stake'],
+  },
+  {
+    section: 'ETHICAL, INCLUSIVE & SUSTAINABLE MANAGEMENT',
+    part: '2 OF 3',
+    title: 'Workforce Inclusion and Employee Wellbeing',
+    spot: ['s7-inclusive', 's7-injury', 's7-indigenous', 's7-wellbeing', 's7-capability'],
+  },
+  {
+    section: 'ETHICAL, INCLUSIVE & SUSTAINABLE MANAGEMENT',
+    part: '3 OF 3',
+    title: 'Sustainability Performance and Stakeholder Value',
+    spot: ['s8-emissions', 's8-waste', 's8-community', 's8-initiatives', 's8-frameworks', 's8-judge'],
+  },
+  {
+    section: 'ORGANISATIONAL CULTURE',
+    part: '1 OF 1',
+    title: 'How Does Bunnings’ Culture Influence Management?',
+    spot: ['s9-values', 's9-artefacts', 's9-espoused', 's9-assumptions', 's9-strengths', 's9-challenges', 's9-judge'],
+  },
+  {
+    section: 'KEY MANAGERIAL IMPLICATIONS',
+    part: '1 OF 1',
+    title: 'Key Managerial Insights and Recommendations',
+    spot: ['s10-insight', 's10-r1', 's10-r2', 's10-r3', 's10-r4', 's10-kpi'],
+  },
+  {
+    section: 'CONCLUSION',
+    part: '1 OF 1',
+    title: 'Bunnings Group: Overall Evaluation',
+    spot: ['s11-assess', 's11-c1', 's11-c2', 's11-c3', 's11-key'],
+  },
+  {
+    section: 'ACADEMIC AND ORGANISATIONAL SOURCES',
+    part: '1 OF 1',
+    title: 'References',
+    spot: Array.from({ length: 11 }, (_, i) => `s12-r${i}`),
+  },
+]
+
+export const pad2 = (n: number) => String(n).padStart(2, '0')
