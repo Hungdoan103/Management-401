@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { createContext, useContext, useMemo, useRef, type ReactNode } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Float } from '@react-three/drei'
-import { Boxes, Landmark, PiggyBank, Sparkles, Star, Tag, type LucideIcon } from 'lucide-react'
+import { Boxes, Network, PiggyBank, Star, Tag, Warehouse, type LucideIcon } from 'lucide-react'
 import { DragRotate, Hero, Medallion, PAL, Part, Pedestal, useFocus } from '../kit'
 
 const STONE = new THREE.Color('#e9e4d2')
@@ -102,26 +102,25 @@ export default function Scene03() {
     <Hero position={[3.3, -0.3, 0]} scale={0.98}>
       <DragRotate sway={0.5} tilt={0.14} yaw={-0.12} radius={2.2}>
         <Float speed={1.2} rotationIntensity={0.05} floatIntensity={0.3}>
-          {/* corporate-level strategy = the roof that shelters everything */}
+          {/* Big-box format shelters the three price / range / experience pillars */}
           <Stone id="s3-corp" accent={PAL.mint} lift={0.1}>
             <Block args={[3.1, 0.2, 1.14]} position={[0, 0.61, 0]} />
             <Roof />
-            <Medallion icon={Landmark} color={PAL.mint} radius={0.24} focusId="s3-corp" position={[0, 0.98, 0.62]} />
+            <Medallion icon={Warehouse} color={PAL.mint} radius={0.24} focusId="s3-corp" position={[0, 0.98, 0.62]} />
           </Stone>
 
-          {/* three strategic pillars */}
           <Pillar id="s3-p1" x={-1.05} accent={PAL.amber} icon={Tag} />
           <Pillar id="s3-p2" x={0} accent={PAL.lime} icon={Boxes} />
           <Pillar id="s3-p3" x={1.05} accent={PAL.sky} icon={Star} />
 
-          {/* business-level strategy = the foundation */}
+          {/* Cost advantage engines under the pillars */}
           <Stone id="s3-cost" accent={PAL.amber} lift={-0.05} position={[-0.81, -1.25, 0]}>
             <Block args={[1.58, 0.3, 1.36]} />
             <Medallion icon={PiggyBank} color={PAL.amber} radius={0.14} focusId="s3-cost" billboard={false} position={[0, 0, 0.7]} />
           </Stone>
           <Stone id="s3-diff" accent={PAL.sky} lift={-0.05} position={[0.81, -1.25, 0]}>
             <Block args={[1.58, 0.3, 1.36]} />
-            <Medallion icon={Sparkles} color={PAL.sky} radius={0.14} focusId="s3-diff" billboard={false} position={[0, 0, 0.7]} />
+            <Medallion icon={Network} color={PAL.sky} radius={0.14} focusId="s3-diff" billboard={false} position={[0, 0, 0.7]} />
           </Stone>
         </Float>
       </DragRotate>

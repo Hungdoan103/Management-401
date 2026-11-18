@@ -6,8 +6,8 @@ import { DragRotate, Hero, PAL, Part, Pedestal, damp, getShieldGeometry, mulberr
 
 const N = 10 // 10 x 10 tiles: each tile stands for 1% of supplier sites
 const PITCH = 0.27
-const FY24 = 77
 const FY25 = 71
+const HIGH_RISK = 18 // amber tiles when modern-slavery / stakeholder risk is spotlighted
 
 const LIT = new THREE.Color(PAL.lime)
 const GAP = new THREE.Color(PAL.amber) // the tiles that were monitored in FY2024 but not in FY2025
@@ -47,10 +47,11 @@ function SiteGrid() {
   useFrame((state, dt) => {
     const active = useDeck.getState().active
     const t = state.clock.elapsedTime
-    coverage.current = damp(coverage.current, active === 's6-fy24' ? FY24 : FY25, 3.2, dt)
-    const showGap = Math.max(stake.current.on, active === 's6-fy24' || active === 's6-fy25' ? 1 : 0)
+    // Always show 71% monitored sites; risk spots flag the remaining uncovered tiles
+    coverage.current = damp(coverage.current, FY25, 3.2, dt)
+    const showGap = Math.max(stake.current.on, active === 's6-fy24' ? 1 : 0)
 
-    scan.current += dt * (0.32 + sourcing.current.on * 0.7)
+    scan.current += dt * (0.32 + sourcing.current.on * 0.7 + (active === 's6-ethics' ? 0.55 : 0))
     const half = (N * PITCH) / 2 + 0.1
     const scanZ = THREE.MathUtils.lerp(-half, half, (scan.current % 1.25) / 1.0)
     scanner.current.position.z = scanZ
@@ -60,7 +61,7 @@ function SiteGrid() {
     for (let i = 0; i < tiles.length; i++) {
       const tile = tiles[i]
       const level = THREE.MathUtils.clamp(coverage.current - tile.rank, 0, 1)
-      const inGap = tile.rank >= FY25 && tile.rank < FY24
+      const atRisk = tile.rank >= FY25 && tile.rank < FY25 + HIGH_RISK
       const sweep = Math.exp(-Math.pow((tile.z - scanZ) / 0.16, 2)) * (scanner.current.visible ? 1 : 0)
       const h = 0.06 + level * 0.2 + sweep * 0.05
 
@@ -73,11 +74,11 @@ function SiteGrid() {
       dummy.updateMatrix()
       lamps.current.setMatrixAt(i, dummy.matrix)
 
-      // lit tiles glow lime; the six "lost" tiles are flagged in amber when the topic is coverage
-      if (inGap) {
+      // lit = monitored; uncovered/high-risk flash amber on modern-slavery / stakeholder focus
+      if (atRisk && showGap > 0.05) {
         const blink = 0.55 + 0.45 * Math.sin(t * 5)
-        color.copy(OFF).lerp(GAP, Math.max(level, showGap * blink * 0.85))
-        color.multiplyScalar(1 + (level + showGap * blink) * 1.1 + sweep)
+        color.copy(OFF).lerp(GAP, showGap * blink)
+        color.multiplyScalar(1 + showGap * blink * 1.1 + sweep)
       } else {
         color.copy(OFF).lerp(LIT, level)
         color.multiplyScalar(1 + level * (0.75 + sweep * 1.6 + sourcing.current.on * 0.5) + sweep * 0.6)
@@ -162,7 +163,7 @@ function Guardian() {
   )
 }
 
-/** Slide 6 - supplier monitoring coverage, FY2024 vs FY2025. */
+/** Slide 6 - 71% supplier monitoring grid under an ethical-governance shield. */
 export default function Scene06() {
   return (
     <Hero position={[3.3, -0.55, 0]} scale={0.92}>

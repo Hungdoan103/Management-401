@@ -1,7 +1,8 @@
 import * as THREE from 'three'
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { DragRotate, Hero, PAL, Part, Pedestal, getHeartGeometry, useFocus } from '../kit'
+import { Scale, Sun, Zap } from 'lucide-react'
+import { DragRotate, Hero, Medallion, PAL, Part, Pedestal, getHeartGeometry, useFocus } from '../kit'
 
 const R = 1.12
 const UP = new THREE.Vector3(0, 1, 0)
@@ -209,7 +210,25 @@ function Community() {
   )
 }
 
-/** Slide 8 - a small green planet carrying the three sustainability results. */
+/** Extra policy satellites linked to the three narrative cards. */
+function PolicySatellites() {
+  const items = [
+    { id: 's8-initiatives', icon: Sun, color: PAL.amber, a: 0.4 },
+    { id: 's8-frameworks', icon: Zap, color: PAL.lime, a: 2.5 },
+    { id: 's8-judge', icon: Scale, color: PAL.coral, a: 4.5 },
+  ] as const
+  return (
+    <group position-y={1.55}>
+      {items.map((it) => (
+        <Part key={it.id} id={it.id} position={[Math.cos(it.a) * 1.15, Math.sin(it.a * 1.3) * 0.2, Math.sin(it.a) * 1.15]}>
+          <Medallion icon={it.icon} color={it.color} radius={0.2} focusId={it.id} />
+        </Part>
+      ))}
+    </group>
+  )
+}
+
+/** Slide 8 - planet of emissions / waste / community + policy satellites. */
 export default function Scene08() {
   return (
     <Hero>
@@ -218,6 +237,7 @@ export default function Scene08() {
         <CleanEnergy />
         <RecyclingLoop />
         <Community />
+        <PolicySatellites />
       </DragRotate>
       <Pedestal y={-1.95} r={1.6} />
     </Hero>

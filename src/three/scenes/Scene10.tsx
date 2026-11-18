@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { useMemo, useRef, type RefObject } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { HeartHandshake, Leaf, MonitorSmartphone, ShieldCheck, type LucideIcon } from 'lucide-react'
+import { Bot, Link2, UsersRound, Wind, type LucideIcon } from 'lucide-react'
 import { DragRotate, Hero, Medallion, PAL, Part, Pedestal, useFocus } from '../kit'
 
 const MODULE = 0.05 // pitch radius per tooth - identical for all gears so they really mesh
@@ -16,11 +16,12 @@ interface GearSpec {
   toNext?: number
 }
 
+/** AI → blockchain oversight → Scope 3 → inclusive leadership */
 const TRAIN: GearSpec[] = [
-  { id: 's10-r1', teeth: 18, color: PAL.sky, icon: MonitorSmartphone, toNext: -25 },
-  { id: 's10-r2', teeth: 14, color: PAL.amber, icon: ShieldCheck, toNext: -125 },
-  { id: 's10-r3', teeth: 18, color: PAL.lime, icon: Leaf, toNext: -10 },
-  { id: 's10-r4', teeth: 12, color: PAL.coral, icon: HeartHandshake },
+  { id: 's10-r1', teeth: 18, color: PAL.sky, icon: Bot, toNext: -25 },
+  { id: 's10-r2', teeth: 14, color: PAL.amber, icon: Link2, toNext: -125 },
+  { id: 's10-r3', teeth: 18, color: PAL.lime, icon: Wind, toNext: -10 },
+  { id: 's10-r4', teeth: 12, color: PAL.coral, icon: UsersRound },
 ]
 
 /** Works out where each gear sits and the phase that makes its teeth interlock with its neighbour. */

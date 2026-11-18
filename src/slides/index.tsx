@@ -12,6 +12,7 @@ import Slide09 from './Slide09'
 import Slide10 from './Slide10'
 import Slide11 from './Slide11'
 import Slide12 from './Slide12'
+import Slide13 from './Slide13'
 
 export interface SlideComponentProps {
   leaving?: boolean
@@ -30,6 +31,7 @@ const ALL: ComponentType<SlideComponentProps>[] = [
   Slide10,
   Slide11,
   Slide12,
+  Slide13,
 ]
 
 const LEAVE_MS = 460

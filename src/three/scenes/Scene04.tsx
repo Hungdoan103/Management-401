@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { HeartHandshake, Leaf, MonitorSmartphone, TrendingDown, type LucideIcon } from 'lucide-react'
+import { Boxes, MonitorSmartphone, Network, TrendingDown, type LucideIcon } from 'lucide-react'
 import { useDeck } from '../../store'
 import { DragRotate, Hero, Medallion, PAL, Part, Pedestal, damp, useFocus } from '../kit'
 
@@ -16,8 +16,8 @@ interface Pressure {
 const PRESSURES: Pressure[] = [
   { id: 's4-economic', color: PAL.amber, icon: TrendingDown, angle: 135 },
   { id: 's4-digital', color: PAL.sky, icon: MonitorSmartphone, angle: 45 },
-  { id: 's4-customer', color: PAL.coral, icon: HeartHandshake, angle: -45 },
-  { id: 's4-sustain', color: PAL.lime, icon: Leaf, angle: -135 },
+  { id: 's4-customer', color: PAL.coral, icon: Boxes, angle: -45 },
+  { id: 's4-sustain', color: PAL.lime, icon: Network, angle: -135 },
 ]
 
 const R_OUT = 1.72

@@ -347,7 +347,7 @@ button {
 }
 .card p {
   margin: 4px 0 0;
-  font: 500 17px/1.42 var(--sans);
+  font: 500 15.5px/1.4 var(--sans);
   color: var(--soft);
   text-wrap: pretty;
 }

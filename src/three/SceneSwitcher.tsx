@@ -13,6 +13,7 @@ import Scene09 from './scenes/Scene09'
 import Scene10 from './scenes/Scene10'
 import Scene11 from './scenes/Scene11'
 import Scene12 from './scenes/Scene12'
+import Scene13 from './scenes/Scene13'
 
 const SCENES: ComponentType[] = [
   Scene01,
@@ -27,6 +28,7 @@ const SCENES: ComponentType[] = [
   Scene10,
   Scene11,
   Scene12,
+  Scene13,
 ]
 
 interface Mounted {

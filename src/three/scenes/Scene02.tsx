@@ -1,7 +1,17 @@
 import * as THREE from 'three'
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { DragRotate, Hero, Part, Pedestal, mulberry32, useFocus } from '../kit'
+import { Leaf, MonitorSmartphone, ShieldAlert, Tag, UsersRound, type LucideIcon } from 'lucide-react'
+import { DragRotate, Hero, Medallion, PAL, Part, Pedestal, mulberry32, useFocus } from '../kit'
+
+/** Five management challenges orbiting the AU/NZ network. */
+const CHALLENGES: Array<{ id: string; icon: LucideIcon; color: string; angle: number }> = [
+  { id: 's2-price', icon: Tag, color: PAL.amber, angle: 20 },
+  { id: 's2-digital', icon: MonitorSmartphone, color: PAL.sky, angle: 90 },
+  { id: 's2-supply', icon: ShieldAlert, color: PAL.coral, angle: 160 },
+  { id: 's2-esg', icon: Leaf, color: PAL.lime, angle: 230 },
+  { id: 's2-culture', icon: UsersRound, color: PAL.mint, angle: 300 },
+]
 
 /* Simplified coastlines as [longitude, latitude] rings - stylised, not survey-grade. */
 const AUSTRALIA: Array<[number, number]> = [
@@ -164,10 +174,31 @@ function Team() {
   })
 
   return (
-    <instancedMesh ref={mesh} args={[undefined, undefined, COUNT]} frustumCulled={false} raycast={() => null}>
-      <sphereGeometry args={[1, 8, 6]} />
-      <meshBasicMaterial ref={material} toneMapped={false} />
-    </instancedMesh>
+    <Part id="s2-employees">
+      <instancedMesh ref={mesh} args={[undefined, undefined, COUNT]} frustumCulled={false}>
+        <sphereGeometry args={[1, 8, 6]} />
+        <meshBasicMaterial ref={material} toneMapped={false} />
+      </instancedMesh>
+    </Part>
+  )
+}
+
+function ChallengeOrbit() {
+  const ring = useRef<THREE.Group>(null!)
+  useFrame((_, dt) => {
+    ring.current.rotation.y += dt * 0.18
+  })
+  return (
+    <group ref={ring} position-y={0.55}>
+      {CHALLENGES.map((c) => {
+        const a = THREE.MathUtils.degToRad(c.angle)
+        return (
+          <Part key={c.id} id={c.id} position={[Math.cos(a) * 1.85, Math.sin(a * 2) * 0.15, Math.sin(a) * 1.85]}>
+            <Medallion icon={c.icon} color={c.color} radius={0.22} focusId={c.id} />
+          </Part>
+        )
+      })}
+    </group>
   )
 }
 
@@ -220,6 +251,7 @@ export default function Scene02() {
           <StorePins />
           <Team />
           <RevenueRipples />
+          <ChallengeOrbit />
         </group>
       </DragRotate>
       <Pedestal y={-1.75} r={1.85} />

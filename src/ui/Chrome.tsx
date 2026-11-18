@@ -11,6 +11,7 @@ import {
   LayoutGrid,
   Leaf,
   Maximize,
+  MessageCircleQuestion,
   Radar,
   Scale,
   ShieldCheck,
@@ -36,6 +37,7 @@ const SLIDE_ICONS: LucideIcon[] = [
   Compass,
   Scale,
   BookOpen,
+  MessageCircleQuestion,
 ]
 
 /** Prev / next / overview / fullscreen buttons. They fade out while the pointer is idle. */

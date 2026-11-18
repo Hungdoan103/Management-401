@@ -10,11 +10,11 @@ export default function Slide01({ leaving }: SlideComponentProps) {
   return (
     <Slide n={1} leaving={leaving} hint="Drag to rotate">
       <p className="subtitle reveal" style={i(5)}>
-        A Critical Case Analysis of Bunnings Group (Wesfarmers)
+        A Corporate Management Case Analysis of Bunnings Group (Wesfarmers)
       </p>
       <div className="rule reveal" style={i(6)} />
       <p className="tagline reveal" style={i(7)}>
-        Group Case Analysis and Presentation
+        Strategy, Ethical Governance and Organisational Culture
       </p>
 
       <dl className="credits">
