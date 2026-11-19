@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useTexture } from '@react-three/drei'
 import { useDeck } from '../store'
@@ -29,6 +29,7 @@ uniform float uExposure;
 uniform float uContrast;
 uniform float uSat;
 uniform float uHighlight;
+uniform float uOpacity;
 varying vec2 vUv;
 
 void main() {
@@ -50,11 +51,20 @@ void main() {
   rgb = mix(vec3(g), rgb, uSat);
 
   rgb = clamp(rgb, 0.0, 1.0);
-  gl_FragColor = vec4(rgb, 1.0);
+  if (uOpacity < 0.01) discard;
+  gl_FragColor = vec4(rgb, uOpacity);
 }
 `
 
-function GradedMaterial({ map }: { map: THREE.Texture }) {
+function GradedMaterial({
+  map,
+  opacity = 1,
+  transparent = false,
+}: {
+  map: THREE.Texture
+  opacity?: number
+  transparent?: boolean
+}) {
   const mat = useMemo(
     () =>
       new THREE.ShaderMaterial({
@@ -64,34 +74,47 @@ function GradedMaterial({ map }: { map: THREE.Texture }) {
           uContrast: { value: 1.06 },
           uSat: { value: 1.1 },
           uHighlight: { value: 0.22 },
+          uOpacity: { value: opacity },
         },
         vertexShader: gradeVert,
         fragmentShader: gradeFrag,
         toneMapped: false,
+        transparent,
+        depthWrite: !transparent,
         side: THREE.DoubleSide,
       }),
-    [map],
+    [map, transparent],
   )
 
   useEffect(() => {
     mat.uniforms.uMap.value = map
   }, [mat, map])
 
+  useEffect(() => {
+    mat.uniforms.uOpacity.value = opacity
+  }, [mat, opacity])
+
   useEffect(() => () => mat.dispose(), [mat])
   return <primitive object={mat} attach="material" />
 }
 
-function MediaMatte({ map }: { map: THREE.Texture }) {
+function MediaMatte({ map, opacity = 1, transparent = false, z = 0 }: { map: THREE.Texture; opacity?: number; transparent?: boolean; z?: number }) {
+  return (
+    <mesh position={[0, 0, z]}>
+      <planeGeometry args={[WIDTH, HEIGHT]} />
+      <GradedMaterial map={map} opacity={opacity} transparent={transparent} />
+    </mesh>
+  )
+}
+
+function MediaFrame({ children }: { children: ReactNode }) {
   return (
     <group>
       <mesh position={[0, 0, -0.02]} raycast={() => null}>
         <planeGeometry args={[WIDTH + 0.06, HEIGHT + 0.06]} />
         <meshBasicMaterial color="#0a1f17" />
       </mesh>
-      <mesh>
-        <planeGeometry args={[WIDTH, HEIGHT]} />
-        <GradedMaterial map={map} />
-      </mesh>
+      {children}
     </group>
   )
 }
@@ -102,23 +125,29 @@ function ImagePanel({ src }: { src: string }) {
     map.colorSpace = THREE.SRGBColorSpace
     map.anisotropy = 8
   }, [map])
-  return <MediaMatte map={map} />
+  return (
+    <MediaFrame>
+      <MediaMatte map={map} />
+    </MediaFrame>
+  )
 }
 
 /**
- * Poster JPG first; only fetch the mp4 once this slide is live.
- * Avoids competing downloads while the previous slide is still exiting.
+ * Poster stays under the clip; video fades in only after a real frame is painted
+ * so the JPG→MP4 handoff does not flash.
  */
 function VideoPanel({ src, poster, playing }: { src: string; poster: string; playing: boolean }) {
   const posterMap = useTexture(poster)
   const [videoMap, setVideoMap] = useState<THREE.VideoTexture | null>(null)
+  const [fade, setFade] = useState(0)
   const videoRef = useRef<HTMLVideoElement | null>(null)
+  const fadeRef = useRef(0)
+  const readyRef = useRef(false)
 
   useEffect(() => {
     posterMap.colorSpace = THREE.SRGBColorSpace
   }, [posterMap])
 
-  // create the element once; attach src only when the slide becomes live
   useEffect(() => {
     const video = document.createElement('video')
     video.crossOrigin = 'anonymous'
@@ -127,11 +156,15 @@ function VideoPanel({ src, poster, playing }: { src: string; poster: string; pla
     video.playsInline = true
     video.preload = 'none'
     videoRef.current = video
+    readyRef.current = false
+    fadeRef.current = 0
+    setFade(0)
     return () => {
       video.pause()
       video.removeAttribute('src')
       video.load()
       videoRef.current = null
+      readyRef.current = false
       setVideoMap((prev) => {
         prev?.dispose()
         return null
@@ -144,8 +177,10 @@ function VideoPanel({ src, poster, playing }: { src: string; poster: string; pla
     if (!video || !playing) return
 
     let cancelled = false
-    const onReady = () => {
-      if (cancelled) return
+    let frameHandle = 0
+
+    const reveal = () => {
+      if (cancelled || readyRef.current) return
       const tex = new THREE.VideoTexture(video)
       tex.colorSpace = THREE.SRGBColorSpace
       tex.minFilter = THREE.LinearFilter
@@ -154,28 +189,59 @@ function VideoPanel({ src, poster, playing }: { src: string; poster: string; pla
         prev?.dispose()
         return tex
       })
-      const p = video.play()
-      if (p) p.catch(() => {})
+      readyRef.current = true
+    }
+
+    const onTime = () => {
+      if (cancelled || readyRef.current) return
+      if (video.readyState >= 2 && video.currentTime > 0.02) reveal()
     }
 
     if (!video.src) {
       video.src = src
       video.preload = 'auto'
-      video.addEventListener('loadeddata', onReady, { once: true })
       video.load()
-    } else {
-      const p = video.play()
-      if (p) p.catch(() => {})
+    }
+
+    video.addEventListener('timeupdate', onTime)
+    video.addEventListener('playing', onTime)
+    const play = video.play()
+    if (play) play.catch(() => {})
+
+    const rvfc = (video as HTMLVideoElement & {
+      requestVideoFrameCallback?: (cb: () => void) => number
+    }).requestVideoFrameCallback
+    if (typeof rvfc === 'function') {
+      frameHandle = rvfc.call(video, () => reveal())
     }
 
     return () => {
       cancelled = true
-      video.removeEventListener('loadeddata', onReady)
       video.pause()
+      video.removeEventListener('timeupdate', onTime)
+      video.removeEventListener('playing', onTime)
+      const cancel = (video as HTMLVideoElement & {
+        cancelVideoFrameCallback?: (h: number) => void
+      }).cancelVideoFrameCallback
+      if (frameHandle && typeof cancel === 'function') cancel.call(video, frameHandle)
     }
   }, [playing, src])
 
-  return <MediaMatte map={videoMap ?? posterMap} />
+  useFrame((_, dt) => {
+    const target = readyRef.current && playing ? 1 : 0
+    const next = THREE.MathUtils.damp(fadeRef.current, target, 5.5, dt)
+    fadeRef.current = next
+    if (Math.abs(next - fade) > 0.012 || (next > 0.995 && fade < 1) || (next < 0.01 && fade > 0)) {
+      setFade(next > 0.995 ? 1 : next < 0.01 ? 0 : next)
+    }
+  })
+
+  return (
+    <MediaFrame>
+      <MediaMatte map={posterMap} z={0} />
+      {videoMap && <MediaMatte map={videoMap} z={0.002} opacity={fade} transparent />}
+    </MediaFrame>
+  )
 }
 
 /** Quiet floor pool — no additive Pedestal glare. */
