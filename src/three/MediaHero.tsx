@@ -105,7 +105,10 @@ function ImagePanel({ src }: { src: string }) {
   return <MediaMatte map={map} />
 }
 
-/** Looping mp4 on the hero plane; falls back to poster JPG until the first frame is ready. */
+/**
+ * Poster JPG first; only fetch the mp4 once this slide is live.
+ * Avoids competing downloads while the previous slide is still exiting.
+ */
 function VideoPanel({ src, poster, playing }: { src: string; poster: string; playing: boolean }) {
   const posterMap = useTexture(poster)
   const [videoMap, setVideoMap] = useState<THREE.VideoTexture | null>(null)
@@ -115,28 +118,16 @@ function VideoPanel({ src, poster, playing }: { src: string; poster: string; pla
     posterMap.colorSpace = THREE.SRGBColorSpace
   }, [posterMap])
 
+  // create the element once; attach src only when the slide becomes live
   useEffect(() => {
     const video = document.createElement('video')
-    video.src = src
     video.crossOrigin = 'anonymous'
     video.loop = true
     video.muted = true
     video.playsInline = true
-    video.preload = 'auto'
+    video.preload = 'none'
     videoRef.current = video
-
-    const onReady = () => {
-      const tex = new THREE.VideoTexture(video)
-      tex.colorSpace = THREE.SRGBColorSpace
-      tex.minFilter = THREE.LinearFilter
-      tex.magFilter = THREE.LinearFilter
-      setVideoMap(tex)
-    }
-    video.addEventListener('loadeddata', onReady)
-    video.load()
-
     return () => {
-      video.removeEventListener('loadeddata', onReady)
       video.pause()
       video.removeAttribute('src')
       video.load()
@@ -150,14 +141,39 @@ function VideoPanel({ src, poster, playing }: { src: string; poster: string; pla
 
   useEffect(() => {
     const video = videoRef.current
-    if (!video || !videoMap) return
-    if (playing) {
+    if (!video || !playing) return
+
+    let cancelled = false
+    const onReady = () => {
+      if (cancelled) return
+      const tex = new THREE.VideoTexture(video)
+      tex.colorSpace = THREE.SRGBColorSpace
+      tex.minFilter = THREE.LinearFilter
+      tex.magFilter = THREE.LinearFilter
+      setVideoMap((prev) => {
+        prev?.dispose()
+        return tex
+      })
       const p = video.play()
       if (p) p.catch(() => {})
+    }
+
+    if (!video.src) {
+      video.src = src
+      video.preload = 'auto'
+      video.addEventListener('loadeddata', onReady, { once: true })
+      video.load()
     } else {
+      const p = video.play()
+      if (p) p.catch(() => {})
+    }
+
+    return () => {
+      cancelled = true
+      video.removeEventListener('loadeddata', onReady)
       video.pause()
     }
-  }, [playing, videoMap])
+  }, [playing, src])
 
   return <MediaMatte map={videoMap ?? posterMap} />
 }
