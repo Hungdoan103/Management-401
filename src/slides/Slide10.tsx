@@ -4,7 +4,7 @@ import type { SlideComponentProps } from '.'
 
 export default function Slide10({ leaving }: SlideComponentProps) {
   return (
-    <Slide n={10} leaving={leaving} hint="Four levers that only work when they turn together">
+    <Slide n={10} leaving={leaving} hint="Illustration · four levers · drag to tilt">
       <div className="col">
         <Card id="s10-r1" i={3} badge="01" title="Integrate AI & digital technology" tone="sky" className="card-tight">
           Push AI into store–warehouse collaboration; personalise journeys for loyal customers; and optimise e-commerce

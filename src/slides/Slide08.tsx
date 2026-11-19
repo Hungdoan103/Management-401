@@ -8,7 +8,7 @@ export default function Slide08({ leaving }: SlideComponentProps) {
       n={8}
       leaving={leaving}
       footer="Sources: Wesfarmers Limited (2025); Fritz (2022); Arian et al. (2023); Zhang and Liu (2023)."
-      hint="Hover a figure · drag the planet"
+      hint="Illustration · hover a figure · drag to tilt"
     >
       <div className="col">
         <Row cols={3}>

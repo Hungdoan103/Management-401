@@ -115,6 +115,7 @@ export function SceneShell({ phase, dir, children }: { phase: 'in' | 'out'; dir:
       const e = t === 0 ? 0 : easeOutBack(t)
       g.visible = t > 0
       g.scale.setScalar(Math.max(e, 0.0001))
+      g.position.x = 0
       g.position.y = (1 - e) * -2.2 * dir
       g.rotation.y = (1 - e) * -1.6 * dir
     } else {
@@ -122,6 +123,7 @@ export function SceneShell({ phase, dir, children }: { phase: 'in' | 'out'; dir:
       const e = easeInCubic(t)
       g.visible = t < 1
       g.scale.setScalar(Math.max(1 - e, 0.0001))
+      g.position.x = 0
       g.position.y = e * 2.6 * dir
       g.rotation.y = e * 1.4 * dir
     }

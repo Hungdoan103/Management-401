@@ -8,7 +8,7 @@ export default function Slide06({ leaving }: SlideComponentProps) {
       n={6}
       leaving={leaving}
       footer="Sources: Wesfarmers Limited (2025); Mahajan et al. (2023); Siems et al. (2023)."
-      hint="Each tile ≈ 1% of supplier sites · hover a policy"
+      hint="Illustration · hover a policy · drag to tilt"
     >
       <div className="col">
         <Card id="s6-ethics" i={3} icon={ShieldCheck} title="Ethical governance & human rights">

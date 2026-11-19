@@ -8,7 +8,7 @@ export default function Slide07({ leaving }: SlideComponentProps) {
       n={7}
       leaving={leaving}
       footer="Sources: Wesfarmers Limited (2025); Pham et al. (2024)."
-      hint="Inclusive team around safety & wellbeing · hover a pillar"
+      hint="Illustration · hover a pillar · drag to tilt"
     >
       <div className="col">
         <Card id="s7-inclusive" i={3} icon={Users} title="Inclusive management & diversity pillars">

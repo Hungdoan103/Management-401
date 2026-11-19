@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState, type ComponentType } from 'react'
+import { Suspense, useEffect, useRef, useState, type ComponentType } from 'react'
 import { useDeck } from '../store'
 import { SceneShell } from './kit'
+import { SLIDE_MEDIA } from './mediaMap'
+import MediaHero from './MediaHero'
 import Scene01 from './scenes/Scene01'
 import Scene02 from './scenes/Scene02'
 import Scene03 from './scenes/Scene03'
@@ -40,7 +42,7 @@ interface Mounted {
 
 const EXIT_MS = 700
 
-/** Mounts the 3D model of the current slide and lets the previous one fly out. */
+/** Left = HTML copy · right = MediaHero / procedural 3D. */
 export default function SceneSwitcher() {
   const index = useDeck((s) => s.index)
   const serial = useRef(1)
@@ -62,10 +64,17 @@ export default function SceneSwitcher() {
   return (
     <>
       {mounted.map((m) => {
+        const media = SLIDE_MEDIA[m.index]
         const Scene = SCENES[m.index]
         return (
           <SceneShell key={m.key} phase={m.phase} dir={m.dir}>
-            <Scene />
+            {media ? (
+              <Suspense fallback={null}>
+                <MediaHero {...media} />
+              </Suspense>
+            ) : (
+              <Scene />
+            )}
           </SceneShell>
         )
       })}

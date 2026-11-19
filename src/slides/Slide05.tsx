@@ -8,7 +8,7 @@ export default function Slide05({ leaving }: SlideComponentProps) {
       n={5}
       leaving={leaving}
       footer="Source: Wesfarmers Limited (2025). VRIO interpretation."
-      hint="Each VRIO step · drag to rotate"
+      hint="Animated scene · each VRIO step · drag to tilt"
     >
       <div className="col">
         <Card id="s5-v" i={3} badge="V" title="Brand & reputation — Valuable · Rare · Hard to imitate" tone="mint" className="card-tight">

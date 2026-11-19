@@ -9,7 +9,7 @@ export default function Slide03({ leaving }: SlideComponentProps) {
       n={3}
       leaving={leaving}
       footer="Source: Wesfarmers Limited (2025). Cost-leadership framing."
-      hint="Hover a pillar · drag to rotate"
+      hint="Animated scene · hover a pillar · drag to tilt"
     >
       <div className="col">
         <h2 className="subhead reveal" style={{ '--i': 3 } as CSSProperties}>

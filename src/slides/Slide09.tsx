@@ -11,7 +11,7 @@ export default function Slide09({ leaving }: SlideComponentProps) {
       n={9}
       leaving={leaving}
       footer="Sources: Wesfarmers Limited (2025); Pham et al. (2024); Enbaia et al. (2024); Khan and Badulescu (2025)."
-      hint="Culture iceberg · hover a layer"
+      hint="Illustration · hover a culture layer · drag to tilt"
     >
       <div className="col">
         <Card id="s9-values" i={3} icon={Gem} title="Five core organisational values" className="card-tight">

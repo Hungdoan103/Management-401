@@ -18,7 +18,7 @@ export default function Slide04({ leaving }: SlideComponentProps) {
       n={4}
       leaving={leaving}
       footer="Sources: Wesfarmers Limited (2025); Liu and Song (2023, 2024)."
-      hint="Pressure → solution → impact · hover a card"
+      hint="Animated scene · pressure → solution → impact · drag to tilt"
     >
       <div className="col">
         <Card

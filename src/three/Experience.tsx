@@ -6,6 +6,7 @@ import { Bloom, EffectComposer, ToneMapping } from '@react-three/postprocessing'
 import { ToneMappingMode } from 'postprocessing'
 import { useDeck } from '../store'
 import { Glow, HERO_POS, PAL } from './kit'
+import { SLIDE_MEDIA } from './mediaMap'
 import SceneSwitcher from './SceneSwitcher'
 
 const BASE_FOV = 35
@@ -108,6 +109,8 @@ function Lighting() {
 
 export default function Experience({ eventSource }: { eventSource: RefObject<HTMLDivElement> }) {
   const quality = useDeck((s) => s.quality)
+  const index = useDeck((s) => s.index)
+  const mediaSlide = !!SLIDE_MEDIA[index]
   const [dpr, setDpr] = useState(() => Math.min(window.devicePixelRatio, 1.75))
   const high = quality === 'high'
 
@@ -127,13 +130,37 @@ export default function Experience({ eventSource }: { eventSource: RefObject<HTM
       <Lighting />
 
       {/* drifting dust motes give the space depth */}
-      <Sparkles count={150} scale={[19, 10, 7]} position={[0, 0, -1]} size={2.6} speed={0.28} opacity={0.55} color={PAL.mint} noise={1.2} />
-      <Sparkles count={40} scale={[16, 9, 4]} position={[0, 0, 2]} size={5} speed={0.2} opacity={0.3} color={PAL.lime} noise={1} />
-      <Glow position={[HERO_POS[0], HERO_POS[1] + 0.2, -3]} size={11} opacity={0.2} color="#58c98a" />
+      <Sparkles
+        count={mediaSlide ? 50 : 150}
+        scale={[19, 10, 7]}
+        position={[0, 0, -1]}
+        size={2.4}
+        speed={0.28}
+        opacity={mediaSlide ? 0.18 : 0.55}
+        color={PAL.mint}
+        noise={1.2}
+      />
+      <Sparkles
+        count={mediaSlide ? 10 : 40}
+        scale={[16, 9, 4]}
+        position={[0, 0, 2]}
+        size={mediaSlide ? 3 : 5}
+        speed={0.2}
+        opacity={mediaSlide ? 0.1 : 0.3}
+        color={PAL.lime}
+        noise={1}
+      />
+      <Glow
+        position={[HERO_POS[0], HERO_POS[1] + 0.2, -3]}
+        size={mediaSlide ? 6.5 : 11}
+        opacity={mediaSlide ? 0.06 : 0.2}
+        color="#58c98a"
+      />
 
       <SceneSwitcher />
 
-      {high && (
+      {/* Bloom + ACES wash illustrated media plates — skip composer on those slides */}
+      {high && !mediaSlide && (
         <EffectComposer multisampling={4}>
           <Bloom mipmapBlur luminanceThreshold={1} luminanceSmoothing={0.25} intensity={0.85} radius={0.72} />
           <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />

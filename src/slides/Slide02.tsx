@@ -8,7 +8,7 @@ export default function Slide02({ leaving }: SlideComponentProps) {
       n={2}
       leaving={leaving}
       footer="Source: Wesfarmers Limited (2025)."
-      hint="Hover a challenge · drag the map"
+      hint="Hover a challenge · drag to tilt"
     >
       <div className="col">
         <Row cols={3}>
