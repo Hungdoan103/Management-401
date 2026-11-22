@@ -148,17 +148,20 @@ function VideoPanel({ src, poster, playing }: { src: string; poster: string; pla
     posterMap.colorSpace = THREE.SRGBColorSpace
   }, [posterMap])
 
+  // Create element + start download immediately (overlaps enter animation / poster paint).
   useEffect(() => {
     const video = document.createElement('video')
     video.crossOrigin = 'anonymous'
     video.loop = true
     video.muted = true
     video.playsInline = true
-    video.preload = 'none'
+    video.preload = 'auto'
+    video.src = src
     videoRef.current = video
     readyRef.current = false
     fadeRef.current = 0
     setFade(0)
+    video.load()
     return () => {
       video.pause()
       video.removeAttribute('src')
@@ -195,12 +198,6 @@ function VideoPanel({ src, poster, playing }: { src: string; poster: string; pla
     const onTime = () => {
       if (cancelled || readyRef.current) return
       if (video.readyState >= 2 && video.currentTime > 0.02) reveal()
-    }
-
-    if (!video.src) {
-      video.src = src
-      video.preload = 'auto'
-      video.load()
     }
 
     video.addEventListener('timeupdate', onTime)

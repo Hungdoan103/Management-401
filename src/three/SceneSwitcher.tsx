@@ -2,6 +2,7 @@ import { Suspense, useEffect, useRef, useState, type ComponentType } from 'react
 import { useDeck } from '../store'
 import { SceneShell } from './kit'
 import { SLIDE_MEDIA } from './mediaMap'
+import { prefetchMediaAround } from './mediaPrefetch'
 import MediaHero from './MediaHero'
 import Scene01 from './scenes/Scene01'
 import Scene02 from './scenes/Scene02'
@@ -59,6 +60,12 @@ export default function SceneSwitcher() {
     })
     const t = window.setTimeout(() => setMounted((list) => list.filter((m) => m.phase === 'in')), EXIT_MS)
     return () => window.clearTimeout(t)
+  }, [index])
+
+  // Warm nearby posters/clips in the background so the next advance feels instant.
+  useEffect(() => {
+    const idle = window.setTimeout(() => prefetchMediaAround(index), 350)
+    return () => window.clearTimeout(idle)
   }, [index])
 
   return (
